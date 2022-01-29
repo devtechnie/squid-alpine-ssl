@@ -24,11 +24,12 @@ COPY start.sh /usr/local/bin/
 COPY openssl.cnf.add /etc/ssl
 COPY conf/squid*.conf /etc/squid/
 
-RUN cat /etc/ssl/openssl.cnf.add >> /etc/ssl/openssl.cnf
-
-RUN chmod +x /usr/local/bin/start.sh
-
+RUN chmod +x /usr/local/bin/start.sh && \
+    cat /etc/ssl/openssl.cnf.add >> /etc/ssl/openssl.cnf
+    
 EXPOSE 3128
 EXPOSE 4128
+EXPOSE 5128
+EXPOSE 5129
 
 ENTRYPOINT ["/usr/local/bin/start.sh"]

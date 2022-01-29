@@ -40,6 +40,13 @@ create_cert() {
 	fi
 }
 
+create_empty_logs() {
+	touch /var/log/squid/access.log
+	touch /var/log/squid/cache.log
+	chown squid:squid /var/log/squid/access.log
+	chown squid:squid /var/log/squid/cache.log
+}
+
 clear_certs_db() {
 	echo "Clearing generated certificate db..."
 	rm -rfv /var/lib/ssl_db/
@@ -51,9 +58,12 @@ run() {
 	echo "Starting squid..."
 	prepare_folders
 	create_cert
+	create_empty_logs
 	clear_certs_db
 	initialize_cache
-	exec "$SQUID" -NYCd 1 -f /etc/squid/squid.conf
+	tail -n 0 -F /var/log/squid/access.log & \
+	tail -n 0 -F /var/log/squid/cache.log & \
+	exec "$SQUID" -N -d 1 -f /etc/squid/squid.conf
 }
 
 run
